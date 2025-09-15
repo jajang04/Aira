@@ -235,7 +235,7 @@ Prefix List :[\\ / ! # . ].
 📌 Untuk mengirim gif acak dari folder media.
 `);
 }
-if (body.toLowerCase().includes('aira') && body.toLowerCase().includes('grup')||body.toLowerCase().includes('aira') && body.toLowerCase().includes('kelas')) {
+if (body.toLowerCase().includes('aira') && (body.toLowerCase().includes('grup')|| body.toLowerCase().includes('kelas'))) {
 console.log(logMessage);
   return m.reply(`
 📢 LIST GRUP/KELAS 📢
@@ -251,7 +251,7 @@ console.log(logMessage);
 `);
 }
 // TEMPLATE UNTUK NILAI/METRIK
-if (body.toLowerCase().includes('aira') && body.toLowerCase().includes('nilai')||body.toLowerCase().includes('aira') && body.toLowerCase().includes('metrik')) {
+if (body.toLowerCase().includes('aira') && (body.toLowerCase().includes('nilai')||body.toLowerCase().includes('metrik'))) {
 console.log(logMessage);
   return m.reply(`
 📢 Metrik Penilaian Umum 📢
@@ -266,7 +266,7 @@ D    ->   40 - 49
 E    ->    0   - 39`);
 }
 // TEMPLATE UNTUK HARI LIBUR
-if (body.toLowerCase().includes('aira') && body.toLowerCase().includes('libur')||body.toLowerCase().includes('aira') && body.toLowerCase().includes('cuti')) {
+if (body.toLowerCase().includes('aira') && (body.toLowerCase().includes('libur')||body.toLowerCase().includes('cuti'))) {
 console.log(logMessage);
   return m.reply(`
 📢 HARI LIBUR NASIONAL & CUTI BERSAMA 📢
@@ -280,7 +280,7 @@ console.log(logMessage);
 `);
 }
 // TEMPLATE UNTUK KALENDER GANJIL
-if (body.toLowerCase().includes('aira') && body.toLowerCase().includes('kalender') && body.toLowerCase().includes('ganjil')||body.toLowerCase().includes('aira') && body.toLowerCase().includes('kalender') && body.toLowerCase().includes('sekarang')) {
+if (body.toLowerCase().includes('aira') && (body.toLowerCase().includes('kalender') && body.toLowerCase().includes('ganjil')||body.toLowerCase().includes('kalender') && body.toLowerCase().includes('sekarang'))) {
 console.log(logMessage);
   return m.reply(`
 📢 KALENDER AKADEMIK SEMESTER GANJIL 📢
@@ -334,7 +334,7 @@ console.log(logMessage);
 `);
 }
 // TEMPLATE UNTUK KALENDER DEPAN/GENAP
-if (body.toLowerCase().includes('aira') && body.toLowerCase().includes('kalender') && (/\bdepan\b/.test(lowerBody))||body.toLowerCase().includes('aira') && body.toLowerCase().includes('kalender') && body.toLowerCase().includes('genap')) {
+if (body.toLowerCase().includes('aira') && (body.toLowerCase().includes('kalender') && (/\bdepan\b/.test(lowerBody))||body.toLowerCase().includes('kalender') && body.toLowerCase().includes('genap'))) {
 console.log(logMessage);
   return m.reply(`
 📢 KALENDER AKADEMIK SEMESTER DEPAN/GENAP 📢
@@ -353,7 +353,7 @@ console.log(logMessage);
 `);
 }
 // TEMPLATE UNTUK ROSTER/JADWAL
-if (body.toLowerCase().includes('aira') && body.toLowerCase().includes('roster')||body.toLowerCase().includes('aira') && body.toLowerCase().includes('jadwal')) {
+if (body.toLowerCase().includes('aira') && (body.toLowerCase().includes('roster')||body.toLowerCase().includes('jadwal'))) {
 console.log(logMessage);
   return m.reply(`
 📢 JADWAL KULIAH [NAMA KELAS] 📢
@@ -374,7 +374,7 @@ console.log(logMessage);
 `);
 }
 // TEMPLATE UNTUK TUGAS BESAR
-if (body.toLowerCase().includes('aira') && body.toLowerCase().includes('tugas')||body.toLowerCase().includes('aira') && body.toLowerCase().includes('besar')) {
+if (body.toLowerCase().includes('aira') && (body.toLowerCase().includes('tugas')||/\btb\b/.test(lowerBody))) {
 console.log(logMessage);
   return m.reply(`
 *(Tugas Besar [NAMA KELAS])*
@@ -397,7 +397,7 @@ console.log(logMessage);
 `);
 }
 // TEMPLATE UNTUK KELAS PENGGANTI
-if (body.toLowerCase().includes('aira') && (/\bkp\b/.test(lowerBody)||lowerBody.includes('pengganti'))||body.toLowerCase().includes('aira') && (/\bminggu\b/.test(lowerBody)||lowerBody.includes('tenang'))) {
+if (body.toLowerCase().includes('aira') && ((/\bkp\b/.test(lowerBody)||lowerBody.includes('pengganti'))||(/\bminggu\b/.test(lowerBody)||lowerBody.includes('tenang')))) {
 console.log(logMessage);
   return m.reply(`
 📢 JADWAL KELAS PENGGANTI & MINGGU TENANG 📢
@@ -446,7 +446,7 @@ console.log(logMessage);
 🕒 [WAKTU]
 `);
 }
-if (body.toLowerCase().includes('aira') && (/\buts\b/.test(lowerBody) || lowerBody.includes('petrikrandom'))) {
+if (body.toLowerCase().includes('aira') && (/\bpr\b/.test(lowerBody) || lowerBody.includes('petrikrandom'))) {
     console.log(logMessage);
 
     const imageDir = "./media/images/petrik"; // Ganti dengan folder gambar yang berisi jadwal UTS
@@ -465,7 +465,7 @@ if (body.toLowerCase().includes('aira') && (/\buts\b/.test(lowerBody) || lowerBo
 // aira.js
 // aira.js
 
-if (body.toLowerCase().includes('aira') && (/\buts\b/.test(lowerBody) || lowerBody.includes('petrikspesifik'))) {
+if (body.toLowerCase().includes('aira') && (/\bps\b/.test(lowerBody) || lowerBody.includes('petrikspesifik'))) {
     console.log(logMessage);
     
     // Ganti 'path/to/your/image.jpg' dengan jalur file gambar Anda
@@ -475,7 +475,7 @@ if (body.toLowerCase().includes('aira') && (/\buts\b/.test(lowerBody) || lowerBo
     await client.sendMedia(from, imagePath, 'image', captionText, m);
     return;
 }
-if (body.toLowerCase().includes('aira') && (/\buts\b/.test(lowerBody) || lowerBody.includes('hugrandom'))) {
+if (body.toLowerCase().includes('aira') && (/\bhr\b/.test(lowerBody) || lowerBody.includes('hugrandom'))) {
     console.log(logMessage);
 
     const gifDir = "./media/gifs"; // Pastikan folder ini sudah ada dan berisi file .gif
@@ -496,7 +496,7 @@ if (body.toLowerCase().includes('aira') && (/\buts\b/.test(lowerBody) || lowerBo
 // aira.js
   
 
-if (body.toLowerCase().includes('aira') && (/\buts\b/.test(lowerBody) || lowerBody.includes('huspesifik'))) {
+if (body.toLowerCase().includes('aira') && (/\bhs\b/.test(lowerBody) || lowerBody.includes('huspesifik'))) {
     console.log(logMessage);
     
     // Ganti 'path/to/your/gif.gif' dengan jalur file GIF Anda
