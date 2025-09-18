@@ -5,7 +5,8 @@ const util = require("util");
 const chalk = require("chalk");
 const { checkAndRespond } = require('./badwall'); // Sesuaikan path jika perlu
 const evilCultivator = require('./games/evil-cultivator');
-module.exports = sansekai = async (client, m, chatUpdate) => {
+module.exports = function(customStore) {
+    const aira = async (client, m, chatUpdate) => {
   try {
         // --- Definisi Body yang Aman dari Pesan (Digunakan) ---
     // Menangani berbagai jenis pesan: teks, teks extend, gambar/video dengan caption, dll.
@@ -80,7 +81,7 @@ const logMessage = `${chalk.black(chalk.bgWhite("[ LOGS ]"))} ${color(argsLog, "
 // === Evil Cultivator Game Commands ===
 
 // --- PERUBAHAN: Tambahkan listener untuk event dari evilCultivator ---
-// Tambahkan listener ini sekali saja saat fungsi sansekai dijalankan
+// Tambahkan listener ini sekali saja saat fungsi aira dijalankan
 // Kita gunakan flag global untuk memastikan hanya satu listener yang ditambahkan
 if (!global.evilCultivatorListenersAdded) {
     console.log("[AIRA] Adding event listeners for evilCultivator...");
@@ -173,6 +174,167 @@ if (body.toLowerCase().includes('aira') && (/\btag\b/.test(lowerBody)||lowerBody
         .map(participant => participant.id);
     const message = `wahai @${mentions.map(id => id.split('@')[0]).join(' @')}, kalian dipanggil oleh petinggi grup!`;
     await client.sendMessage(m.chat, { text: message, mentions: mentions });
+}
+// --- Command Handler untuk Jadwal ---
+// panduan command jadwal
+if (body.toLowerCase() === 'aira update jadwal') {
+    console.log(logMessage);
+    return reply(`📢 *Panduan Update Jadwal*\n\nGunakan format ini untuk memperbarui jadwal:\n\n*aira update jadwal <nama_kelas> <nomor_minggu>\n<jadwal_lengkap>*\n\nContoh:\n*aira update jadwal AK-b 5\nSenin, 08.00-10.00 Akuntansi online\nSelasa, 13.00-15.00 Statistika offline*\n\n---\n\n📄 *TEMPLATE JADWAL*\n(Salin, tempel, dan isi)\n\n*aira update jadwal [NAMA KELAS] [NOMOR MINGGU]\n\n========== [SENIN] ==========\n📖 [NAMA MATA KULIAH]\n🕒 [WAKTU]\n📝 [LOKASI]\n\n========== [SELASA] ==========\n📖 [NAMA MATA KULIAH]\n🕒 [WAKTU]\n📝 [LOKASI]*`);
+}
+if (body.toLowerCase() === 'aira jadwal' || body.toLowerCase() === 'aira roster') {
+    console.log(logMessage);
+        return reply(`📢 *Panduan Lihat Jadwal*\n\nUntuk melihat jadwal:\n\n*aira jadwal <nama_kelas> [nomor_minggu]*\n\nContoh: *aira jadwal ak-b* (untuk lihat seluruh jadwal) atau *aira jadwal AK-B 5* (untuk lihat jadwal Minggu 5)`); }
+if (body.toLowerCase() === 'aira delete jadwal') {
+    console.log(logMessage);
+        return reply(`📢 *Panduan Delete Jadwal*\n\nUntuk menghapus jadwal:\n\n*aira delete jadwal <nama_kelas> [nomor_minggu]*\n\n* Jika Anda ingin menghapus seluruh jadwal satu kelas, jangan sertakan nomor_minggu.`); }
+      
+// Command: aira update jadwal <nama_kelas> <nomor_minggu>
+// Contoh: aira update jadwal AK-B 5 [jadwal_lengkap]
+if (body.toLowerCase().startsWith('aira update jadwal ')) {
+    console.log(logMessage);
+    // Ambil bagian teks setelah command, tanpa mengubah case-nya
+    const text = body.slice('aira update jadwal'.length).trim();
+    
+    // Periksa jika tidak ada argumen setelah command
+    if (!text) {
+        return reply(`📢 *Panduan Update Jadwal*\n\nGunakan format ini untuk memperbarui jadwal:\n\n*aira update jadwal <nama_kelas> <nomor_minggu>\n<jadwal_lengkap>*\n\nContoh:\n*aira update jadwal AK-b 5\nSenin, 08.00-10.00 Akuntansi online\nSelasa, 13.00-15.00 Statistika offline*, ga harus single line, bisa pakai template yang dibawah juga`);
+    }
+
+    // Pisahkan nama kelas dan nomor minggu dari jadwal lengkap
+    const parts = text.split('\n');
+    const firstLineParts = parts[0].split(/\s+/);
+
+    if (firstLineParts.length < 2) {
+        return reply('📝 Format salah. Gunakan: aira update jadwal <nama_kelas> <nomor_minggu>\nKemudian masukkan jadwal di baris berikutnya.');
+    }
+
+    // Ambil nama kelas dan nomor minggu, ubah ke lowercase untuk konsistensi
+    const className = firstLineParts[0].toLowerCase();
+    const weekNumber = firstLineParts[1].toLowerCase();
+    
+    // Ambil sisa baris sebagai jadwal, gabungkan kembali dengan '\n'
+    const scheduleText = parts.slice(1).join('\n').trim();
+
+    if (!scheduleText) {
+        return reply('📝 Jadwal tidak boleh kosong. Mohon sertakan jadwal di bawah nama kelas dan nomor minggu.');
+    }
+
+    // Pastikan objek schedules ada di customStore
+    if (!customStore.data.schedules) {
+        customStore.data.schedules = {};
+    }
+    
+    // Pastikan objek untuk kelas tersebut ada
+    if (!customStore.data.schedules[className]) {
+        customStore.data.schedules[className] = {};
+    }
+
+    // Simpan jadwal di dalam objek nested
+    // scheduleText sekarang akan mempertahankan huruf kapital
+    customStore.data.schedules[className][weekNumber] = scheduleText;
+    customStore.writeToFile();
+
+    return reply(`✅ Jadwal untuk *${className.toUpperCase()}* Minggu ke-*${weekNumber}* berhasil diperbarui.`);
+}
+
+// Command: aira jadwal <nama_kelas> [nomor_minggu]
+// Contoh: aira jadwal ak-b 5 1
+if (body.toLowerCase().startsWith('aira jadwal ') || body.toLowerCase().startsWith('aira roster ')) {
+    const trimmedBody = body.toLowerCase().slice(body.toLowerCase().startsWith('aira jadwal') ? 'aira jadwal'.length : 'aira roster'.length).trim();
+    
+    // Ini sudah menjadi panduan
+    if (!trimmedBody) {
+        return reply(`📢 *Panduan Lihat Jadwal*\n\nUntuk melihat jadwal:\n\n*aira jadwal <nama_kelas> [nomor_minggu]*\n\nContoh: *aira jadwal ak-b 5* (untuk lihat seluruh jadwal) atau *aira jadwal ak-b 5 1* (untuk lihat jadwal Minggu 1)`);
+    }
+    
+    console.log(logMessage);
+    
+    const parts = body.toLowerCase().trim().split(/\s+/);
+    const className = parts.length > 2 ? parts[2] : null;
+    const weekNumber = parts.length > 3 ? parts[3] : null;
+
+    // Periksa apakah ada objek schedules sebelum mencoba mengaksesnya
+    if (!customStore.data.schedules) {
+        customStore.data.schedules = {};
+    }
+
+    if (!className) {
+        const availableClasses = Object.keys(customStore.data.schedules).map(key => `* ${key}`).join('\n');
+        let message = '📚 Jadwal apa yang kamu cari?\n\n';
+        if (availableClasses) {
+            message += `Silakan sebutkan salah satu kelas berikut:\n${availableClasses}\n\n`;
+            message += 'Contoh: *aira jadwal ak-b 5* atau *aira jadwal ak-b 5*';
+        } else {
+            message += 'Maaf, belum ada jadwal yang tersimpan.';
+        }
+        return m.reply(message);
+    }
+    
+    const storedSchedules = customStore.data.schedules[className];
+
+    if (!storedSchedules) {
+        return m.reply(`📁 Maaf, jadwal untuk kelas *${className}* tidak ditemukan. Pastikan nama kelas sudah benar.`);
+    }
+
+    if (weekNumber) {
+        const weekSchedule = storedSchedules[weekNumber];
+        if (weekSchedule) {
+            return m.reply(`📢 JADWAL KULIAH *${className.toUpperCase()}* MINGGU KE-*${weekNumber}* 📢\n\n${weekSchedule}`);
+        } else {
+            return m.reply(`📁 Maaf, jadwal untuk kelas *${className}* minggu ke-*${weekNumber}* tidak ditemukan.`);
+        }
+    } else {
+        // Jika tidak ada nomor minggu, tampilkan seluruh jadwal
+        let fullSchedule = `📢 JADWAL LENGKAP KELAS *${className.toUpperCase()}* 📢\n\n`;
+        const sortedWeeks = Object.keys(storedSchedules).sort((a, b) => parseInt(a) - parseInt(b));
+        sortedWeeks.forEach(week => {
+            fullSchedule += `========== [MINGGU ${week}] ==========\n`;
+            fullSchedule += `${storedSchedules[week]}\n\n`;
+        });
+        return m.reply(fullSchedule);
+    }
+}
+
+// Command: aira delete jadwal <nama_kelas> [nomor_minggu]
+// Contoh: aira delete jadwal AK-B 5
+if (body.toLowerCase().startsWith('aira delete jadwal ')) {
+    const trimmedBody = body.slice('aira delete jadwal'.length).trim();
+
+    // Periksa jika tidak ada argumen
+    if (!trimmedBody) {
+        return reply(`📢 *Panduan Delete Jadwal*\n\nUntuk menghapus jadwal:\n\n*aira delete jadwal <nama_kelas> [nomor_minggu]*\n\n* Jika Anda ingin menghapus seluruh jadwal satu kelas, jangan sertakan nomor_minggu.`);
+    }
+
+    const parts = trimmedBody.split(/\s+/);
+    console.log(logMessage);
+
+    const className = parts[0].toLowerCase();
+    const weekNumber = parts.length > 1 ? parts[1].toLowerCase() : null;
+
+    // Periksa apakah ada jadwal untuk kelas ini
+    if (!customStore.data.schedules || !customStore.data.schedules[className]) {
+        return reply(`📁 Maaf, jadwal untuk kelas *${className}* tidak ditemukan.`);
+    }
+
+    // Jika nomor minggu disertakan, hapus hanya minggu itu
+    if (weekNumber) {
+        if (customStore.data.schedules[className][weekNumber]) {
+            delete customStore.data.schedules[className][weekNumber];
+            // Jika tidak ada minggu lain, hapus juga objek kelasnya
+            if (Object.keys(customStore.data.schedules[className]).length === 0) {
+                delete customStore.data.schedules[className];
+            }
+            customStore.writeToFile();
+            return reply(`✅ Jadwal untuk *${className.toUpperCase()}* Minggu ke-*${weekNumber}* berhasil dihapus.`);
+        } else {
+            return reply(`📁 Maaf, jadwal untuk kelas *${className}* minggu ke-*${weekNumber}* tidak ditemukan.`);
+        }
+    } else {
+        // Jika tidak ada nomor minggu, hapus seluruh jadwal untuk kelas itu
+        delete customStore.data.schedules[className];
+        customStore.writeToFile();
+        return reply(`✅ Seluruh jadwal untuk *${className.toUpperCase()}* berhasil dihapus.`);
+    }
 }
 // TEMPLATE UNTUK GRUP/KELAS
 if (body.toLowerCase().includes('aira') && lowerBody.includes('menu')) {
@@ -350,27 +512,6 @@ console.log(logMessage);
 🎓 [SEKSI 3]
 [INFO 1]
 [INFO 2]
-`);
-}
-// TEMPLATE UNTUK ROSTER/JADWAL
-if (body.toLowerCase().includes('aira') && (body.toLowerCase().includes('roster')||body.toLowerCase().includes('jadwal'))) {
-console.log(logMessage);
-  return m.reply(`
-📢 JADWAL KULIAH [NAMA KELAS] 📢
-🆕 Last Update: [TANGGAL UPDATE]
-========== [SENIN] ==========
-📖 [NAMA MATA KULIAH]
-👨”🝫 [NAMA DOSEN]
-📝 [LOKASI]
-🕒 [WAKTU]
-🎓 [SKS]
-
-========== [SELASA] ==========
-📖 [NAMA MATA KULIAH]
-👩”🝫 [NAMA DOSEN]
-📝 [LOKASI]
-🕒 [WAKTU]
-🎓 [SKS]
 `);
 }
 // TEMPLATE UNTUK TUGAS BESAR
@@ -1267,8 +1408,11 @@ console.log(logMessage);
     }
   } catch (err) {
     m.reply(util.format(err));
-  }
+    }
+  };
+  return aira;
 };
+
 let file = require.resolve(__filename);
 fs.watchFile(file, () => {
     fs.unwatchFile(file);
