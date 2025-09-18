@@ -368,8 +368,17 @@ prefix : aira
 🔹 cmd: aira kalender depan/genap
 📌 Untuk melihat kalender akademik semester depan atau genap.
 
-🔹 cmd: aira roster/jadwal
+🔹 cmd: aira roster/jadwal [nama_kelas] [nomor_minggu]
 📌 Untuk melihat jadwal perkuliahan mingguan.
+   Contoh: aira jadwal AK-B 5 
+
+🔹 cmd: aira update jadwal [nama_kelas] [nomor_minggu]
+📌 Untuk memperbarui atau menambahkan jadwal kelas.
+   Contoh: aira update jadwal AK-B 5 [jadwal_lengkap]
+
+🔹 cmd: aira delete jadwal[nama_kelas] [nomor_minggu]
+📌 Untuk menghapus jadwal kelas per minggu atau seluruhnya.
+   Contoh: aira delete jadwal AK-B 5
 
 🔹 cmd: aira tugas/besar
 📌 Untuk melihat daftar tugas besar.
